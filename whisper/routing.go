@@ -1,9 +1,11 @@
+/* Contributors: Andrea Piccione */
+
 package whisper
 
 import (
-	"fmt"
+	//"fmt"
 	"github.com/dedis/protobuf"
-	"github.com/mikanikos/Peerster/gossiper"
+	"github.com/mikanikos/DSignal/gossiper"
 	"math"
 	"net"
 	"sync"
@@ -55,8 +57,7 @@ func (routingHandler *RoutingHandler) updateRoutingTable(whisperStatus *gossiper
 				} else {
 					status.Bloom = whisperStatus.Bloom
 				}
-
-				fmt.Println(status.Bloom)
+				//fmt.Println("\nWhisper: routing table updated for BloomFilter, peer entry " + address.String())
 			}
 		}
 
@@ -67,8 +68,10 @@ func (routingHandler *RoutingHandler) updateRoutingTable(whisperStatus *gossiper
 				} else {
 					status.Pow = whisperStatus.Pow
 				}
+				//fmt.Println("\nWhisper: routing table updated for PoW, peer entry " + address.String())
 			}
 		}
+		//fmt.Println("\nWhisper: routing table updated, peer entry " + address.String())
 	}
 }
 
@@ -93,8 +96,6 @@ func (routingHandler *RoutingHandler) updateLastOriginID(origin string, id uint3
 // forward envelope according to routing table and only to peers that might be interested
 func (whisper *Whisper) forwardEnvelope(envOr *EnvelopeOrigin) {
 
-	fmt.Println("Forwarding packetttttttttttttttttttttttttttt")
-
 	envelope := envOr.Envelope
 	packetToSend, _ := protobuf.Encode(envelope)
 	packet := &gossiper.GossipPacket{WhisperPacket: &gossiper.WhisperPacket{Code: messagesCode, Payload: packetToSend, Size: uint32(len(packetToSend))}}
@@ -104,15 +105,15 @@ func (whisper *Whisper) forwardEnvelope(envOr *EnvelopeOrigin) {
 
 	for peer, status := range whisper.routingHandler.peerStatus {
 		if peer != envOr.Origin.String() {
-			fmt.Println(status.Bloom)
-			fmt.Println(envelope.GetBloom())
-			fmt.Println(CheckFilterMatch(status.Bloom, envelope.GetBloom()))
-			fmt.Println(fmt.Sprint(envelope.GetPow()) + " | " + fmt.Sprint(status.Pow))
+			//fmt.Println(status.Bloom)
+			//fmt.Println(envelope.GetBloom())
+			//fmt.Println(CheckFilterMatch(status.Bloom, envelope.GetBloom()))
+			//fmt.Println(fmt.Sprint(envelope.GetPow()) + " | " + fmt.Sprint(status.Pow))
 			if CheckFilterMatch(status.Bloom, envelope.GetBloom()) && envelope.GetPow() >= status.Pow {
-				fmt.Println("Passed check")
+				//fmt.Println("Passed check")
 				address := whisper.gossiper.GetPeerFromString(peer)
 				if address != nil {
-					fmt.Println("Sent packetttttttttttttttttttttttttttt")
+					//fmt.Println("\nWhisper: packet forwarded to peer " + address.String())
 					whisper.gossiper.ConnectionHandler.SendPacket(packet, address)
 				}
 			}
@@ -128,7 +129,7 @@ func (whisper *Whisper) sendStatusPeriodically() {
 		wPacket := &gossiper.WhisperStatus{Code: statusCode, Pow: whisper.GetMinPow(), Bloom: whisper.GetBloomFilter()}
 		whisper.gossiper.SendWhisperStatus(wPacket)
 
-		fmt.Println("Sent status")
+		//fmt.Println("Sent status")
 
 		// start timer
 		timer := time.NewTicker(statusTimer)
@@ -136,7 +137,7 @@ func (whisper *Whisper) sendStatusPeriodically() {
 			select {
 			// rumor monger rumor at each timeout
 			case <-timer.C:
-				fmt.Println("Sent status")
+				//fmt.Println("Sent status")
 				wPacket := &gossiper.WhisperStatus{Code: statusCode, Pow: whisper.GetMinPow(), Bloom: whisper.GetBloomFilter()}
 				whisper.gossiper.SendWhisperStatus(wPacket)
 			}

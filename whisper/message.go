@@ -1,3 +1,5 @@
+/* Contributors: Andrea Piccione */
+
 package whisper
 
 import (
@@ -5,7 +7,6 @@ import (
 	"crypto/cipher"
 	crand "crypto/rand"
 	"encoding/binary"
-	"fmt"
 	"github.com/dedis/protobuf"
 	ecies "github.com/ecies/go"
 	"golang.org/x/crypto/sha3"
@@ -101,10 +102,7 @@ func (params *MessageParams) GetEnvelopeFromMessage() (envelope *Envelope, err e
 			return nil, err
 		}
 	} else {
-		err = fmt.Errorf("no symmetric or asymmetric key given")
-	}
-	if err != nil {
-		return nil, err
+		encrypted = params.Payload
 	}
 
 	envelope = NewEnvelope(params.TTL, params.Topic, encrypted)

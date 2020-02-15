@@ -1,3 +1,5 @@
+/* Contributors: Andrea Piccione */
+
 package whisper
 
 import "encoding/hex"

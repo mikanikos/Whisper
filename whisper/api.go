@@ -1,3 +1,5 @@
+/* Contributors: Andrea Piccione */
+
 package whisper
 
 import (
@@ -22,7 +24,7 @@ func (whisper *Whisper) NewWhisperMessage(message NewMessage) ([]byte, error) {
 	isPubKey := len(message.PublicKey) > 0
 
 	// either symmetric or asymmetric key
-	if (isSymKey && isPubKey) || (!isSymKey && !isPubKey) {
+	if isSymKey && isPubKey {
 		return nil, fmt.Errorf("specifiy either public or symmetric key")
 	}
 
@@ -66,9 +68,11 @@ func (whisper *Whisper) NewWhisperMessage(message NewMessage) ([]byte, error) {
 
 	err = whisper.SendEnvelope(env)
 	if err == nil {
+		fmt.Println("\nWhisper: sent whisper envelope")
 		hash := env.GetHash()
 		result = hash[:]
 	}
+
 	return result, err
 }
 
@@ -98,13 +102,14 @@ func (whisper *Whisper) GetFilterMessages(id string) ([]*ReceivedMessage, error)
 
 // NewMessageFilter creates a new filter
 func (whisper *Whisper) NewMessageFilter(req FilterOptions) (string, error) {
+
 	filter := &Filter{}
 
 	isSymKey := len(req.SymKeyID) > 0
 	isPrivKey := len(req.PrivateKeyID) > 0
 
 	// either symmetric or asymmetric key
-	if (isSymKey && isPrivKey) || (!isSymKey && !isPrivKey) {
+	if isSymKey && isPrivKey {
 		return "", fmt.Errorf("either private or symmetric key")
 	}
 
@@ -147,6 +152,8 @@ func (whisper *Whisper) NewMessageFilter(req FilterOptions) (string, error) {
 	if err == nil {
 		whisper.updateBloomFilter(f)
 	}
+
+	fmt.Println("\nWhisper: created new filter with id = " + s)
 
 	return s, err
 }

@@ -1,3 +1,5 @@
+/* Contributors: Andrea Piccione */
+
 package whisper
 
 import (
@@ -9,7 +11,7 @@ import (
 // NewKeyPair generates secp256k1 key pair and store them
 func (whisper *Whisper) NewKeyPair() (string, error) {
 	key, err := ecies.GenerateKey()
-	id, err := GenerateRandomID()
+	id, err := generateRandomID()
 	if err != nil {
 		return "", err
 	}
@@ -29,7 +31,7 @@ func (whisper *Whisper) DeleteKey(id string) {
 
 // AddKeyPair imports an asymmetric private key and returns its id
 func (whisper *Whisper) AddKeyPair(key *ecies.PrivateKey) (string, error) {
-	id, err := GenerateRandomID()
+	id, err := generateRandomID()
 	if err != nil {
 		return "", err
 	}
@@ -63,7 +65,7 @@ func (whisper *Whisper) GenerateSymKey() (string, error) {
 		return "", err
 	}
 
-	id, err := GenerateRandomID()
+	id, err := generateRandomID()
 	if err != nil {
 		return "", err
 	}
@@ -83,7 +85,7 @@ func (whisper *Whisper) AddSymKey(k string) (string, error) {
 		return "", fmt.Errorf("wrong key GetSize")
 	}
 
-	id, err := GenerateRandomID()
+	id, err := generateRandomID()
 	if err != nil {
 		return "", err
 	}

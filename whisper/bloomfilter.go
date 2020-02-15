@@ -1,3 +1,5 @@
+/* Contributors: Andrea Piccione */
+
 package whisper
 
 // CheckFilterMatch check if the given bloom matches the filter
